@@ -1,6 +1,5 @@
 (module
-  (memory $0 1)
-  (export "memory" (memory $0))
+  (import "env" "memory" (memory $0 1))
   (export "abort" (func $abort))
   (export "__errno_location" (func $__errno_location))
   (export "sbrk" (func $sbrk))

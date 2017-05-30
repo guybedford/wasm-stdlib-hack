@@ -14,25 +14,25 @@ MALLOC_OPTS = -DMORECORE_CANNOT_TRIM=1 -DHAVE_MMAP=0 -DHAVE_MREMAP=0 -DLACKS_TIM
 # DISTLIBS = ${addsuffix .o, ${addprefix dist/, ${LIBNAMES}}}
 
 dist/memory.wasm: lib/malloc.wasm lib/memcpy.wasm lib/memset.wasm lib/stdlib-base.wasm
-	$(WABT_BIN)/wasm-link lib/malloc.wasm -o dist/memory.wasm -r
+	$(WABT_BIN)/wasm-link lib/malloc.wasm lib/memcpy.wasm lib/memset.wasm lib/stdlib-base.wasm -o dist/memory.wasm -r
 
 lib/malloc.wasm:
 	$(CLANG) -S --target=wasm32 -Iinclude/libc -Oz -c src/dlmalloc.c -o lib/malloc.s $(MALLOC_OPTS) $(DISABLE_WARN)
-	$(BINARYEN_BIN)/s2wasm lib/malloc.s > lib/malloc.wast
+	$(BINARYEN_BIN)/s2wasm lib/malloc.s --import-memory > lib/malloc.wast
 	rm lib/malloc.s
 	$(BINARYEN_BIN)/wasm-opt -S -Oz lib/malloc.wast -o lib/malloc.wast
 	$(WABT_BIN)/wast2wasm -r lib/malloc.wast -o lib/malloc.wasm
 
 lib/memcpy.wasm:
 	$(CLANG) -S --target=wasm32 -Iinclude/libc -Oz -c src/string/memcpy.c -o lib/memcpy.s $(DISABLE_WARN)
-	$(BINARYEN_BIN)/s2wasm lib/memcpy.s > lib/memcpy.wast
+	$(BINARYEN_BIN)/s2wasm lib/memcpy.s --import-memory > lib/memcpy.wast
 	rm lib/memcpy.s
 	$(BINARYEN_BIN)/wasm-opt -S -Oz lib/memcpy.wast -o lib/memcpy.wast
 	$(WABT_BIN)/wast2wasm -r lib/memcpy.wast -o lib/memcpy.wasm
 
 lib/memset.wasm:
 	$(CLANG) -S --target=wasm32 -Iinclude/libc -Oz -c src/string/memset.c -o lib/memset.s $(DISABLE_WARN)
-	$(BINARYEN_BIN)/s2wasm lib/memset.s > lib/memset.wast
+	$(BINARYEN_BIN)/s2wasm lib/memset.s --import-memory > lib/memset.wast
 	rm lib/memset.s
 	$(BINARYEN_BIN)/wasm-opt -S -Oz lib/memset.wast -o lib/memset.wast
 	$(WABT_BIN)/wast2wasm -r lib/memset.wast -o lib/memset.wasm
@@ -41,4 +41,4 @@ lib/stdlib-base.wasm:
 	$(WABT_BIN)/wast2wasm -r src/stdlib-base.wast -o lib/stdlib-base.wasm
 
 clean:
-	rm lib/*.wasm lib/*.wast
+	rm lib/*.wasm lib/*.wast dist/*.wasm

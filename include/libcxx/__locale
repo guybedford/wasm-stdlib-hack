@@ -19,7 +19,7 @@
 #include <cstdint>
 #include <cctype>
 #include <locale.h>
-#if defined(_LIBCPP_MSVCRT) || defined(__MINGW32__)
+/* #if defined(_LIBCPP_MSVCRT) || defined(__MINGW32__)
 # include <support/win32/locale_win32.h>
 #elif defined(_AIX)
 # include <support/ibm/xlocale.h>
@@ -34,12 +34,14 @@
 # include <support/solaris/xlocale.h>
 #elif defined(_NEWLIB_VERSION)
 # include <support/newlib/xlocale.h>
-#elif // (defined(__GLIBC__) || defined(__APPLE__)      || defined(__FreeBSD__) \
+#elif (defined(__GLIBC__) || defined(__APPLE__) || defined(__FreeBSD__) \
     || defined(__EMSCRIPTEN__) || defined(__IBMCPP__))
 # include <xlocale.h>
-// #elif defined(_LIBCPP_HAS_MUSL_LIBC)
-// # include <support/musl/xlocale.h>
-#endif // __GLIBC__ || __APPLE__ || __FreeBSD__ || __sun__ || __EMSCRIPTEN__ || __IBMCPP__
+#elif defined(_LIBCPP_HAS_MUSL_LIBC)
+# include <support/musl/xlocale.h>
+#endif __GLIBC__ || __APPLE__ || __FreeBSD__ || __sun__ || __EMSCRIPTEN__ || __IBMCPP__ */
+
+#include <support/wasm/xlocale.h>
 
 #if !defined(_LIBCPP_HAS_NO_PRAGMA_SYSTEM_HEADER)
 #pragma GCC system_header
@@ -356,14 +358,14 @@ public:
     static const mask xdigit = _HEX;
     static const mask blank  = _BLANK;
 # define _LIBCPP_CTYPE_MASK_IS_COMPOSITE_PRINT
-#elif defined(__APPLE__) || defined(__FreeBSD__) || defined(__EMSCRIPTEN__) || defined(__NetBSD__)
-# ifdef __APPLE__
-    typedef __uint32_t mask;
-# elif defined(__FreeBSD__)
-    typedef unsigned long mask;
-# elif defined(__EMSCRIPTEN__) || defined(__NetBSD__)
+// #elif defined(__APPLE__) || defined(__FreeBSD__) || defined(__EMSCRIPTEN__) || defined(__NetBSD__)
+//# ifdef __APPLE__
+//    typedef __uint32_t mask;
+//# elif defined(__FreeBSD__)
+//    typedef unsigned long mask;
+//# elif defined(__EMSCRIPTEN__) || defined(__NetBSD__)
     typedef unsigned short mask;
-# endif
+//# endif
     static const mask space  = _CTYPE_S;
     static const mask print  = _CTYPE_R;
     static const mask cntrl  = _CTYPE_C;
@@ -630,10 +632,10 @@ public:
 #endif
     _LIBCPP_ALWAYS_INLINE const mask* table() const  _NOEXCEPT {return __tab_;}
     static const mask* classic_table()  _NOEXCEPT;
-#if defined(__GLIBC__) || defined(__EMSCRIPTEN__)
+//#if defined(__GLIBC__) || defined(__EMSCRIPTEN__)
     static const int* __classic_upper_table() _NOEXCEPT;
     static const int* __classic_lower_table() _NOEXCEPT;
-#endif
+//#endif
 #if defined(__NetBSD__)
     static const short* __classic_upper_table() _NOEXCEPT;
     static const short* __classic_lower_table() _NOEXCEPT;
